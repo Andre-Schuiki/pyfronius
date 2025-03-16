@@ -187,6 +187,11 @@ class Fronius:
         # prepend http:// if missing, by fronius API this is the only supported protocol
         if not self.url.startswith("http"):
             self.url = "http://{}".format(self.url)
+        # fix for https redirect since 1.35.4-1, disable ssl verification
+        if self.url.startswith("https"):
+            connector = aiohttp.TCPConnector(ssl=False)
+            self._aio_session = aiohttp.ClientSession(connector=connector)
+        # fix end
         self.api_version = api_version
         self.base_url = API_BASEPATHS.get(api_version)
 
